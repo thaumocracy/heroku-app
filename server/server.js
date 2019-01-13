@@ -20,6 +20,22 @@ app.post('/todos',(request,response) => {
     todo.save().then(data => response.send(data),error => response.status(400).send(error))
 })
 
+app.delete('/todos/:id',(request,response) => {
+    const id = request.params.id;
+    if(ObjectID.isValid(id)){
+        Todo.findByIdAndRemove(id).then((result) => {
+            if(result){
+                console.log(result);
+                response.status(200).send(result)
+            } else {
+                response.status(404).send(`Unable to remove : id not found`)
+            }
+        })
+    } else {
+        response.status(404).send(`Unable to remove : id is NOT valid`)
+    }
+})
+
 app.get('/todos',(request,response) => {
     console.log(request.body)
     Todo.find().then((todos) => {
@@ -32,15 +48,15 @@ app.get('/todos/:id',(request,response) => {
     if(ObjectID.isValid(id)){
         Todo.findById(id).then((todo) => {
             if(!todo){
-                response.status(404).send('There is no such todo')
+                response.status(404).send('Unable to get : no such ID')
             } else {
                 response.send(todo)
             }
         }).catch((error) => {
-            response.status(404).send('There is no such todo')
+            response.status(404).send('Unable to get : no such ID')
         })
     } else {
-        response.status(404).send('Woops,invalid ID')
+        response.status(404).send('Unable to get : invalid ID')
     }
 })
 
