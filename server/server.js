@@ -1,6 +1,7 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const { ObjectID } = require('mongodb')
+const _ = require('lodash')
 
 const { mongoose } = require('./db/mongoose.js')
 const { Todo } = require('./models/todo')
@@ -33,6 +34,31 @@ app.delete('/todos/:id',(request,response) => {
         })
     } else {
         response.status(404).send(`Unable to remove : id is NOT valid`)
+    }
+})
+
+app.patch('/todos/:id', (request,response) => {
+    const id = request.params.id
+    const body = _.pick(request.body,['text','completed'])
+    console.log(request.body)
+    if(ObjectID.isValid(id)){
+        if(_.isBoolean(body.completed) && body.completed){
+            body.completedAt = new Date().getTime()
+        } else {
+            body.completed = false;
+            body.completedAt = null
+        }
+        Todo.findByIdAndUpdate(id,{$set:body},{new:true}).then((todo) => {
+            if(todo){
+                response.send({todo})
+            } else {
+                response.status(404).send('Unable to change : Not found')
+            }
+        }).catch((error) => {
+            console.log(error)
+        })  
+    } else {
+        response.status(404).send('Unable to change : invalid ID')
     }
 })
 
