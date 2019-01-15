@@ -23,6 +23,12 @@ app.post('/todos',(request,response) => {
     todo.save().then(data => response.send(data),error => response.status(400).send(error))
 })
 
+app.post('/users',(request,response) => {
+    const body = _.pick(request.body,['name','email','password'])
+    let user = new User(body)
+    user.save().then(data => response.send(data),error => response.status(400).send(error))
+})
+
 app.delete('/todos/:id',(request,response) => {
     const id = request.params.id;
     if(ObjectID.isValid(id)){
