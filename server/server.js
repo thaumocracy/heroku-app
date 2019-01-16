@@ -77,7 +77,6 @@ app.patch('/todos/:id', (request,response) => {
     }
 })
 
-
 app.get('/users/me', authenticate ,(request,response) => {
     response.send(request.user)
 })
