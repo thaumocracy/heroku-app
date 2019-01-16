@@ -8,6 +8,7 @@ const _ = require('lodash')
 const { mongoose } = require('./db/mongoose.js')
 const { Todo } = require('./models/todo')
 const { User } = require('./models/user')
+const { authenticate } = require('./middleware/authenticate')
 
 const app = express()
 
@@ -74,6 +75,11 @@ app.patch('/todos/:id', (request,response) => {
     } else {
         response.status(404).send('Unable to change : invalid ID')
     }
+})
+
+
+app.get('/users/me', authenticate ,(request,response) => {
+    response.send(request.user)
 })
 
 app.get('/todos',(request,response) => {
