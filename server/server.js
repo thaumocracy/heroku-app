@@ -26,7 +26,13 @@ app.post('/todos',(request,response) => {
 app.post('/users',(request,response) => {
     const body = _.pick(request.body,['name','email','password'])
     let user = new User(body)
-    user.save().then(data => response.send(data),error => response.status(400).send(error))
+    user.save().then(() => {
+        return user.generateAuthToken()
+    }).then((token) => {
+        response.header('x-auth',token).send(user)
+    }).catch((error) => {
+        response.status(400).send(error)
+    })
 })
 
 app.delete('/todos/:id',(request,response) => {
